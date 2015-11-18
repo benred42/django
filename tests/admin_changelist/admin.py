@@ -104,6 +104,8 @@ site.register(Parent, NoListDisplayLinksParentAdmin)
 class SwallowAdmin(admin.ModelAdmin):
     actions = None  # prevent ['action_checkbox'] + list(list_display)
     list_display = ('origin', 'load', 'speed')
+    list_editable = ['load', 'speed']
+    list_per_page = 3
 
 site.register(Swallow, SwallowAdmin)
 

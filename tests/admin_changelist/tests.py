@@ -685,18 +685,20 @@ class SeleniumFirefoxTests(AdminSeleniumWebDriverTestCase):
         # Test amount of rows in the Changelist
         rows = self.selenium.find_elements_by_css_selector(
             '%s #result_list tbody tr' % form_id)
-        self.assertEqual(len(rows), 1)
+        self.assertEqual(len(rows), 2)
 
         # Test current selection
         selection_indicator = self.selenium.find_element_by_css_selector(
             '%s .action-counter' % form_id)
-        self.assertEqual(selection_indicator.text, "0 of 1 selected")
+        self.assertEqual(selection_indicator.text, "0 of 2 selected")
 
         # Select a row and check again
         row_selector = self.selenium.find_element_by_css_selector(
             '%s #result_list tbody tr:first-child .action-select' % form_id)
         row_selector.click()
-        self.assertEqual(selection_indicator.text, "1 of 1 selected")
+        self.assertEqual(selection_indicator.text, "1 of 2 selected")
+        import time
+        time.sleep(1000)
 
 
 class SeleniumChromeTests(SeleniumFirefoxTests):
