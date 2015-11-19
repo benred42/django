@@ -746,7 +746,7 @@ class SeleniumFirefoxTests(AdminSeleniumWebDriverTestCase):
         self.selenium.implicitly_wait(10)
 
         # Test that the number of objects is the same
-        self.assertEqual(object_counter.text, "1 2 4 swallows")
+        self.assertEqual(object_counter.text, "1 2 4 swallows   Show all")
 
 
 class SeleniumChromeTests(SeleniumFirefoxTests):
