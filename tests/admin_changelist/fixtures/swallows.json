@@ -1,0 +1,38 @@
+[
+  {
+    "pk": 1,
+    "model": "admin_changelist.Swallow",
+    "fields": {
+      "origin": "A",
+      "load": "4",
+      "speed": "4"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "admin_changelist.Swallow",
+    "fields": {
+      "origin": "B",
+      "load": "2",
+      "speed": "2"
+    }
+  },
+  {
+    "pk": 3,
+    "model": "admin_changelist.Swallow",
+    "fields": {
+      "origin": "C",
+      "load": "6",
+      "speed": "6"
+    }
+  },
+  {
+    "pk": 4,
+    "model": "admin_changelist.Swallow",
+    "fields": {
+      "origin": "D",
+      "load": "10",
+      "speed": "10"
+    }
+  }
+]

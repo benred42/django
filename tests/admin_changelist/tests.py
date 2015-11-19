@@ -663,12 +663,15 @@ class AdminLogNodeTestCase(TestCase):
         # it doesn't render any string.
         self.assertEqual(template.render(context), '')
 
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
+
 
 @override_settings(PASSWORD_HASHERS=('django.contrib.auth.hashers.SHA1PasswordHasher',))
 class SeleniumFirefoxTests(AdminSeleniumWebDriverTestCase):
 
     available_apps = ['admin_changelist'] + AdminSeleniumWebDriverTestCase.available_apps
-    fixtures = ['users.json']
+    fixtures = ['users.json', 'swallows.json']
     urls = "admin_changelist.urls"
     webdriver_class = 'selenium.webdriver.firefox.webdriver.WebDriver'
 
@@ -697,8 +700,53 @@ class SeleniumFirefoxTests(AdminSeleniumWebDriverTestCase):
             '%s #result_list tbody tr:first-child .action-select' % form_id)
         row_selector.click()
         self.assertEqual(selection_indicator.text, "1 of 2 selected")
-        import time
-        time.sleep(1000)
+
+    def test_multiuser_edit(self):
+
+        # Login as user1
+        self.admin_login(username='super', password='secret')
+        self.selenium.get('%s%s' % (self.live_server_url,
+                                    '/admin/admin_changelist/swallow/?o=-2'))
+
+        # Open a new tab and login as user2
+        action = ActionChains(self.selenium)
+        action.key_down(Keys.CONTROL)
+        action.send_keys("t")
+        action.key_up(Keys.CONTROL)
+        action.perform()
+        self.selenium.get('%s%s' % ('127.0.0.1:8081',
+                                    '/admin/admin_changelist/swallow/?o=-2'))
+        self.selenium.implicitly_wait(10)
+        username_input = self.selenium.find_element_by_id('id_username')
+        username_input.send_keys("test")
+        password_input = self.selenium.find_element_by_id('id_password')
+        password_input.send_keys("secret")
+        password_input.send_keys(Keys.ENTER)
+
+        # Make an edit as user2
+        user_2_form_input = self.selenium.find_element_by_id('id_form-2-speed')
+        user_2_form_input.send_keys(Keys.BACKSPACE)
+        user_2_form_input.send_keys("1")
+        self.selenium.find_element_by_name("_save").click()
+
+        # Switch back to user1 tab
+        action = ActionChains(self.selenium)
+        action.key_down(Keys.CONTROL)
+        action.send_keys(Keys.PAGE_UP)
+        action.key_up(Keys.CONTROL)
+        action.perform()
+        self.selenium.switch_to_window(self.selenium.window_handles)
+
+        # Make an edit as user1
+        user_1_form_input = self.selenium.find_element_by_id('id_form-2-load')
+        user_1_form_input.send_keys(Keys.BACKSPACE)
+        user_1_form_input.send_keys("5")
+        self.selenium.find_element_by_name("_save").click()
+        object_counter = self.selenium.find_element_by_class_name("paginator")
+        self.selenium.implicitly_wait(10)
+
+        # Test that the number of objects is the same
+        self.assertEqual(object_counter.text, "1 2 4 swallows")
 
 
 class SeleniumChromeTests(SeleniumFirefoxTests):
